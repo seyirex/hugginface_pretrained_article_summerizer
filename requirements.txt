@@ -4,4 +4,5 @@ PyPDF2==1.26.0
 regex==2021.8.28
 transformers==4.17.0
 wordcloud== 1.8.1
-torch==1.11.0
+torch==1.10.1
+steamlit==1.8.1
