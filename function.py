@@ -16,7 +16,7 @@ time_str = time.strftime("%Y%m%d-%H%M%S")
 @st.cache(allow_output_mutation=True)
 def bart():
     ''' Loading bart model using pipeline api '''
-    summarizer = pipeline('summarization',model='amazon/bort')
+    summarizer = pipeline('summarization',model='facebook/bart-large-cnn')
     return summarizer
     
 def t5():
