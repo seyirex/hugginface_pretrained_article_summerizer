@@ -21,7 +21,7 @@ def bart():
     
 def t5():
     ''' Loading t5 model using pipeline api '''
-    summarizer = pipeline("summarization", model="t5-base", tokenizer="t5-base", framework="tf")
+    summarizer = pipeline("summarization", model="t5-base", tokenizer="t5-base")
     return summarizer
 
 # def pegasus():
