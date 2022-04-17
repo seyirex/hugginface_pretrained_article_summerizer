@@ -9,29 +9,47 @@ from wordcloud import WordCloud
 from datetime import datetime
 warnings.filterwarnings("ignore")
 
+# page info setup
+menu_items = {
+	'Get help':'https://www.linkedin.com/in/oluwaseyi-gbadamosi-41015216b/' ,
+	'Report a bug': 'https://www.linkedin.com/in/oluwaseyi-gbadamosi-41015216b/',
+	'About': '''
+	## My Custom App
+
+	Some markdown to show in the About dialog.
+	'''
+}
+#page configuration
+st.set_page_config(page_title="Article Summerizer", page_icon="./favicon/favicon.ico",menu_items=menu_items)
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 def main():
-    menu = ["Home","Storage","About"]
-    create_table()
-    
-    choice = st.sidebar.selectbox("Menu",menu)
-    
-    if choice == "Home":
-        st.title("Demo")
+        # This is used to hide the made with streamlit watermark
+        hide_streamlit_style = """
+                <style>
+                footer {visibility: hidden;}
+                </style>
+                """
+        st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+        # Article Summerizer heading
+        st.markdown("<h1 style = 'color:gold; align:center; font-size: 40px;'> Article Summerizer</h1>", unsafe_allow_html=True)
         
-        st.sidebar.subheader("Tuning/Settings")
-        # max_length= st.sidebar.slider("Maximum length of the generated text ",30,100)
-        # top_k= st.sidebar.slider(" limits the sampled tokens to the top k values ",1,100)
-        # temperature= st.sidebar.slider("Controls the craziness of the text ",0.7,100.0)
+        # control for Model Settings
+        st.sidebar.markdown("<h4 style = 'color:gold; align:center; font-size: 20px;'> Model Settings</h1>", unsafe_allow_html=True)
+        max_length= st.sidebar.number_input("Maximum length of the generated text is  200 tokens",max_value=200)
+        min_length= st.sidebar.number_input("Maximum length of the generated text",min_value=30)
         model_type = st.sidebar.selectbox("Model type", options=["Bart","T5"])
         
+        # This function is used to upload a .txt, .pdf, .docx file for summarization
         upload_doc = st.file_uploader("Upload a .txt, .pdf, .docx file for summarization")
         
-        st.markdown("<h3 style='text-align: center; color: red;'>OR</h3>",unsafe_allow_html=True,)
+        st.markdown("<h3 style='text-align: center; color: gold;'>OR</h3>",unsafe_allow_html=True)
 
+        #This function is used to Type your Message... (text area)
         plain_text = st.text_area("Type your Message...",height=200)
 
+        # this is used to control the logic of the code
         if upload_doc:
             clean_text = preprocess_plain_text(extract_text_from_file(upload_doc))
         else:
@@ -47,12 +65,8 @@ def main():
                 with st.spinner(
                     text="Loading Bart Model and Extracting summary. This might take a few seconds depending on the length of your text..."):
                     summarizer_model = bart()
-                    summarized_text = summarizer_model(text_to_summarize, max_length=100, min_length=30)
+                    summarized_text = summarizer_model(text_to_summarize, max_length=max_length ,min_length=min_length)
                     summarized_text = ' '.join([summ['summary_text'] for summ in summarized_text])
-                    st.success("Data Submitted for model retraining")
-                    postdate = datetime.now()
-                    # Add Data To Database
-                    add_data(text_to_summarize,summarized_text,postdate)
             
             elif model_type == "T5":
                 text_to_summarize = clean_text
@@ -60,26 +74,9 @@ def main():
                 with st.spinner(
                     text="Loading T5 Model and Extracting summary. This might take a few seconds depending on the length of your text..."):
                     summarizer_model = t5()
-                    summarized_text = summarizer_model(text_to_summarize, max_length=100, min_length=30)
+                    summarized_text = summarizer_model(text_to_summarize, max_length=max_length, min_length=min_length)
                     summarized_text = ' '.join([summ['summary_text'] for summ in summarized_text]) 
-                    st.success("Data Submitted for model retraining")
-                    postdate = datetime.now()
-                    # Add Data To Database
-                    add_data(text_to_summarize,summarized_text,postdate)
 
-            # else:
-            #     text_to_summarize = clean_text
-
-            #     with st.spinner(
-            #         text="Loading Pegasus Model and Extracting summary. This might take a few seconds depending on the length of your text..."):
-            #         summarizer_model = pegasus()
-            #         summarized_text = summarizer_model(text_to_summarize, max_length=100, min_length=30)
-            #         # summarized_text = ' '.join([summ['summary_text'] for summ in summarized_text]) 
-            #         st.success("Data Submitted for model retraining")
-            #         postdate = datetime.now()
-            #         # Add Data To Database
-            #         # add_data(text_to_summarize,summarized_text,postdate)      
-            
             res_col1 ,res_col2 = st.columns(2)
             with res_col1:
                 st.subheader("Generated Text Visualization")
@@ -96,24 +93,6 @@ def main():
                 st.subheader("Summarized Text Output")
                 st.success("Summarized Text")
                 st.write(summarized_text)
-    
-    elif choice == "Storage":
-        st.title("Manage & Monitor Results")
-        # stored_data =  view_all_data() 
-        # new_df = pd.DataFrame(stored_data,columns=["text_to_summarize","summarized_text","postdate"])
-        # st.dataframe(new_df)
-        # new_df['postdate'] = pd.to_datetime(new_df['postdate'])
-   
-    
-    else:
-        st.subheader("About")
-        # html_temp ="""<div>
-        #          <p></p>
-        #          <p></p>
-        #          </div>"""
-        # st.markdown(html_temp, unsafe_allow_html=True)
-        
-
 
 if __name__ == '__main__':
 	main()
