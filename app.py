@@ -37,8 +37,8 @@ def main():
         
         # control for Model Settings
         st.sidebar.markdown("<h4 style = 'color:gold; align:center; font-size: 20px;'> Model Settings</h1>", unsafe_allow_html=True)
-        max_length= st.sidebar.number_input("Maximum length of the generated text is  200 tokens",max_value=200)
-        min_length= st.sidebar.number_input("Maximum length of the generated text",min_value=30)
+        max_length= st.sidebar.slider("Maximum length of the generated text is  500 tokens",min_value=100,max_value=500)
+        min_length= st.sidebar.slider("Minimum length of the generated text",min_value=30)
         model_type = st.sidebar.selectbox("Model type", options=["Bart","T5"])
         
         # This function is used to upload a .txt, .pdf, .docx file for summarization
